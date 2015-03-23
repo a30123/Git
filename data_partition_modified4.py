@@ -155,7 +155,8 @@ for ww in range(1):
         section=np.cumsum(uuu)
         section=np.concatenate((np.array([0]),section),axis=0)
         
-        categorylist=np.zeros(modified_length)   
+        categorylist=np.zeros(modified_length+1)
+        categorylist[-1]=-1
     
         for j in range(0, k):
             if k==1:
@@ -180,17 +181,18 @@ for ww in range(1):
         r=0
         rr=0
         if k==1:
-            intv[1,0]=np.count_nonzero(categorylist==categorylist[-1])
-            intv[1,1]=categorylist[-1]
+            intv[1,0]=np.count_nonzero(categorylist==categorylist[-2])
+            intv[1,1]=categorylist[-2]
         else:
             for s in range(len(categorylist)-1):
                 if categorylist[s]!=categorylist[s+1]:
-                    intv[r,0]=np.count_nonzero(categorylist[rr:s]==categorylist[s])
+                    intv[r,0]=np.count_nonzero(categorylist[rr:s+1]==categorylist[s])
                     rr=s
                     intv[r,1]=categorylist[s]
                     r=r+1
     
-        intv_n=len(intv)-np.count_nonzero(intv[r,0]==0)
+#        intv_n=len(intv)-np.count_nonzero(intv[r,0]==0)
+        intv_n=r+1
         intv=intv[0:intv_n,:]
         
         intv[:,0]=np.cumsum(intv[:,0])
