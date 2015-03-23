@@ -61,8 +61,7 @@ def WriteListToCSV(filename_path,listname):
         wr.writerow([item])
 		
     runnumberfile.close()
-
-#reference:    http://stackoverflow.com/questions/273192/check-if-a-directory-exists-and-create-it-if-necessary     
+  
 def ensure_dir(f):
 #    import os
     d=os.path.abspath(f)
@@ -79,8 +78,7 @@ def extract_serial_number(filename):
     return value_of_number
 
 def adjusted_length(step_steplabel_file_path):
-#    import numpy as np
-    
+#    import numpy as np    
     mm=get_variable_from_csv(step_steplabel_file_path, ['Step'])
     
     nonzero_step=np.zeros((1,1))
@@ -106,6 +104,7 @@ setpoint_folder='D://Heater//setpoint'
 current_folder='D://Heater//setpoint'
 output_folder='D://Heater//Output'
 serial_number=1679
+
 #########################################################################################################
 #######################################   MAIN PROGRAM        ###########################################
 #########################################################################################################
