@@ -173,7 +173,7 @@ try:
                 categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))              
             else: 
                 categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-                       
+#test                       
     if k==1:
         intv=np.zeros((2,2))
         intv[1,0]=np.count_nonzero(categorylist==categorylist[-2])
