@@ -173,12 +173,12 @@ try:
                 categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))              
             else: 
                 categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-                
-        
+                       
     if k==1:
         intv=np.zeros((2,2))
         intv[1,0]=np.count_nonzero(categorylist==categorylist[-2])
         intv[1,1]=categorylist[-2]
+        intv_n=2
     else:
         r=0
         rr=0
@@ -189,8 +189,8 @@ try:
                 rr=s
                 intv[r,1]=categorylist[s]
                 r=r+1
-    
-    intv_n=rr+1
+        intv_n=r
+        
     intv=intv[0:intv_n,:]
         
     intv[:,0]=np.cumsum(intv[:,0])
