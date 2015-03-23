@@ -108,14 +108,13 @@ serial_number=1679
 #########################################################################################################
 #######################################   MAIN PROGRAM        ###########################################
 #########################################################################################################
+
 tstart = time.time()
 
 files_in_folder = os.listdir(setpoint_folder) 
 
 complete_dirpath_to_save_segmentlist=os.path.normpath(os.path.join(output_folder,"CSV"))    
 ensure_dir(complete_dirpath_to_save_segmentlist)
-
-doesnotwork=[]
 
 serial_number_list=[]
 for w in range(len(files_in_folder)):
@@ -140,26 +139,11 @@ for ww in range(1):
             mmm[i]=xxx[i].split(".")[0] 
 
         AA=get_variable_from_csv(single_file_path, sensor_variables)
-      
-#        if min(mm)==0:
-#            zero_step=np.count_nonzero(mm==0)
-#        elif min(mm)!=0:
-#            nonzero_step=np.count_nonzero(mm==min(mm))
-#            for i in range(len(mm)):
-#                if mm[i]==min(mm):
-#                    zero_step=(i+1)-nonzero_step
         
         modified_length=adjusted_length(single_file_path)   
-#        modified_length=ultimate_length-int(zero_step)
         
-        A=np.zeros((modified_length,1))
-        m=np.zeros((modified_length,1))
-
-    
         A=AA[-modified_length:]
         m=mmm[-modified_length:]
-#        A=AA[int(zero_step):]
-#        m=mmm[int(zero_step):]
 
         A_difference = np.zeros(((modified_length-1),1))
         for i in range(0,(modified_length-1)):
@@ -179,27 +163,19 @@ for ww in range(1):
             elif k>1 and section[j+1]-section[j]>3:
                 if max(A_difference[section[j]+1:section[j+1]-1])*min(A_difference[section[j]+1:section[j+1]-1]) < 0:#fluctuation
                     categorylist[section[j]:(section[j+1])]=1*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='g', alpha=0.8)
-                elif max(A_difference[section[j]+1:section[j+1]-1]) < -0.1:# decrease fast:red
+                elif max(A_difference[section[j]+1:section[j+1]-1]) < -0.1:# decrease fast
                     categorylist[section[j]:(section[j+1])]=2*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='r', alpha=1)
-                elif min(A_difference[section[j]+1:section[j+1]-1]) > 0.1:# increase fast:yellow
+                elif min(A_difference[section[j]+1:section[j+1]-1]) > 0.1:# increase fast
                     categorylist[section[j]:(section[j+1])]=3*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='y', alpha=1)
-                elif max(A_difference[section[j]+1:section[j+1]-1]) < 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= -0.01: # stable:cyan
+                elif max(A_difference[section[j]+1:section[j+1]-1]) < 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= -0.01: # stable
                     categorylist[section[j]:(section[j+1])]=4*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='c', alpha=0.5)
-                elif max(A_difference[section[j]+1:section[j+1]-1]) <= 0.1 and max(A_difference[section[j]+1:section[j+1]-1]) >= 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= 0: # increase slowly:magenta
+                elif max(A_difference[section[j]+1:section[j+1]-1]) <= 0.1 and max(A_difference[section[j]+1:section[j+1]-1]) >= 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= 0: # increase slowly
                     categorylist[section[j]:(section[j+1])]=5*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='m', alpha=0.5)
-                elif min(A_difference[section[j]+1:section[j+1]-1]) >= -0.1 and max(A_difference[section[j]+1:section[j+1]-1]) <= -0.01 and min(A_difference[section[j]+1:section[j+1]-1]) <= 0: # decrease slowly:gray
-                    categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='k', alpha=0.2)                
+                elif min(A_difference[section[j]+1:section[j+1]-1]) >= -0.1 and max(A_difference[section[j]+1:section[j+1]-1]) <= -0.01 and min(A_difference[section[j]+1:section[j+1]-1]) <= 0: # decrease slowly
+                    categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))            
                 else: 
                     categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-#                    plt.axvspan(section[j], section[j+1], facecolor='w', alpha=1)
-                
-        
+                       
         intv=np.zeros((max(m),2))
         r=0
         rr=0
@@ -221,45 +197,11 @@ for ww in range(1):
         
         intv=np.concatenate((np.zeros((1,2)),intv),axis=0)
         
-#        for v in range(len(intv)-1):
-#            if intv[v+1,1]==1:
-#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='g', alpha=0.8)
-#            if intv[v+1,1]==2:
-#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='r', alpha=1)
-#            if intv[v+1,1]==3:
-#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='y', alpha=1)
-#            if intv[v+1,1]==4:
-#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='c', alpha=0.5)
-#            if intv[v+1,1]==5:
-#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='m', alpha=0.5)
-#            if intv[v+1,1]==6:
-#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='k', alpha=0.2)
-        
-        complete_path_to_save_segmentlist=os.path.normpath(os.path.join(complete_dirpath_to_save_segmentlist,files_in_folder[u]))
-#        figure_filename=files_in_folder[u].replace('.csv','.png')
-#        complete_path_to_save_figure=os.path.normpath(os.path.join(complete_dirpath_to_save_figure,figure_filename))
-        
+        complete_path_to_save_segmentlist=os.path.normpath(os.path.join(complete_dirpath_to_save_segmentlist,files_in_folder[u]))   
         WriteListToCSV(complete_path_to_save_segmentlist,categorylist)
 
-#        plt.xlim(section[0], section[k]-1)
-#        plt.grid()
-#        plt.xlabel("Time(s)",fontsize=16)
-#        plt.ylabel("Setpoint",fontsize=16) 
-#        for tick in plt.gca().xaxis.get_major_ticks():
-#            tick.label1.set_fontsize(12) 
-#        for tick in plt.gca().yaxis.get_major_ticks():
-#            tick.label1.set_fontsize(12) 
-#        plt.savefig(complete_path_to_save_figure)
-#        plt.clf()
-    
-    
     except ValueError:
-#        print('Reading CSV file:',justnumbertemp)
-#        print('run',u)
-        print('No valid StepLabel in this run!!!')
-        doesnotwork.append(u)
-#    print('Reading CSV file:',justnumbertemp) 
-    
+        print('Error!!!')
     print('-----------------------------------------')
 
 print('RUN TIME: %.2f secs' % (time.time()-tstart))
