@@ -18,15 +18,8 @@ import os
 import time
 import csv
 import numpy as np
-<<<<<<< HEAD
 import re
-=======
-#import math
-import re
-#import pandas as pd
-import matplotlib.pyplot as plt
 
->>>>>>> parent of 923b3ca... add serial number input
 #########################################################################################################
 #######################################   FUNCTIONS           ###########################################
 #########################################################################################################
@@ -76,7 +69,6 @@ def ensure_dir(f):
     if not os.path.exists(d):
         os.makedirs(d)
 
-<<<<<<< HEAD
 def extract_serial_number(filename):
 #    import re
     extract_regular_expression=re.search('(_\d+-)',filename)
@@ -104,17 +96,16 @@ def adjusted_length(step_steplabel_file_path):
                 
     return((len(mm)-int(zero_step)))
     
-=======
->>>>>>> parent of 923b3ca... add serial number input
 #########################################################################################################
 #######################################   INITIALIZING        ###########################################
 #########################################################################################################
 
+#intialize "sensor variable of interest","folder to accesss", and "folder to save output to"
 sensor_variables=['Heater.temp']#-------------------------------------"sensor variable of interest"
 setpoint_folder='D://Heater//setpoint'
 current_folder='D://Heater//setpoint'
 output_folder='D://Heater//Output'
-
+serial_number=1679
 #########################################################################################################
 #######################################   MAIN PROGRAM        ###########################################
 #########################################################################################################
@@ -127,156 +118,149 @@ ensure_dir(complete_dirpath_to_save_segmentlist)
 
 doesnotwork=[]
 
-<<<<<<< HEAD
 serial_number_list=[]
 for w in range(len(files_in_folder)):
     serial_number_list.append(extract_serial_number(files_in_folder[w]))
     
-=======
-for u in range(len(files_in_folder)):
-    print(u)
+for ww in range(1):
+    u=serial_number_list.index(serial_number)    
+
     single_file_path=os.path.join(setpoint_folder, files_in_folder[u])
->>>>>>> parent of 923b3ca... add serial number input
 
-u=serial_number_list.index(serial_number)    
-
-<<<<<<< HEAD
-single_file_path=os.path.join(setpoint_folder, files_in_folder[u])
-
-mm=get_variable_from_csv(single_file_path, ['Step'])
-=======
-    justnumbertemp=runnumberbylogfile.group(0)
     mm=get_variable_from_csv(single_file_path, ['Step'])
->>>>>>> parent of 923b3ca... add serial number input
  
-ultimate_length=np.shape(mm)[0]
+    ultimate_length=np.shape(mm)[0]
     
-AA=get_variable_from_csv(single_file_path, sensor_variables)
-    
-try:
-    xxx=get_variable_from_csv_alternative(single_file_path, 'StepLabel')
-    mmm=np.zeros((np.shape(xxx)[0],1))
-        
-    for i in range(len(mmm)):
-        mmm[i]=xxx[i].split(".")[0] 
-
     AA=get_variable_from_csv(single_file_path, sensor_variables)
-      
-    modified_length=adjusted_length(single_file_path)   
-
-<<<<<<< HEAD
-    A=AA[-modified_length:]
-    m=mmm[-modified_length:]
-
-    A_difference = np.zeros(((modified_length-1),1))
-    for i in range(0,(modified_length-1)):
-        A_difference[i] = A[i+1] - A[i]
-        
-    uu,uuu=np.unique(m,return_counts=True)
-    k=len(uuu)
-=======
     
-        A=AA[int(zero_step):]
-        m=mm[int(zero_step):]
+    try:
+        xxx=get_variable_from_csv_alternative(single_file_path, 'StepLabel')
+        mmm=np.zeros((np.shape(xxx)[0],1))
+        
+        for i in range(len(mmm)):
+            mmm[i]=xxx[i].split(".")[0] 
+
+        AA=get_variable_from_csv(single_file_path, sensor_variables)
+      
+#        if min(mm)==0:
+#            zero_step=np.count_nonzero(mm==0)
+#        elif min(mm)!=0:
+#            nonzero_step=np.count_nonzero(mm==min(mm))
+#            for i in range(len(mm)):
+#                if mm[i]==min(mm):
+#                    zero_step=(i+1)-nonzero_step
+        
+        modified_length=adjusted_length(single_file_path)   
+#        modified_length=ultimate_length-int(zero_step)
+        
+        A=np.zeros((modified_length,1))
+        m=np.zeros((modified_length,1))
+
+    
+        A=AA[-modified_length:]
+        m=mmm[-modified_length:]
+#        A=AA[int(zero_step):]
+#        m=mmm[int(zero_step):]
 
         A_difference = np.zeros(((modified_length-1),1))
         for i in range(0,(modified_length-1)):
             A_difference[i] = A[i+1] - A[i]
-        # preprocessing for partition
-#        n=int(max(m))
-#        for k in range(0, (modified_length-1)):
-#            for i in range(1, n):
-#                if math.fabs(A[k+1] - A[k]) <= 0.01:
-#                    m[k+1] = m[k]
-                
+        
         uu,uuu=np.unique(m,return_counts=True)
-        uuu[-1]=uuu[-1]
         k=len(uuu)
-        nnn=uuu
-        # partition completed
->>>>>>> parent of 923b3ca... add serial number input
         
-    section=np.cumsum(uuu)
-    section=np.concatenate((np.array([0]),section),axis=0)
+        section=np.cumsum(uuu)
+        section=np.concatenate((np.array([0]),section),axis=0)
         
-    categorylist=np.zeros(modified_length)   
+        categorylist=np.zeros(modified_length)   
     
-<<<<<<< HEAD
-    for j in range(0, k):
-        if k==1:
-            categorylist[0:section[1]]=4*np.ones((section[1]))
-        elif k>1 and section[j+1]-section[j]>3:
-            if max(A_difference[section[j]+1:section[j+1]-1])*min(A_difference[section[j]+1:section[j+1]-1]) < 0:#fluctuation
-                categorylist[section[j]:(section[j+1])]=1*np.ones((section[j+1]-section[j]))
-            elif max(A_difference[section[j]+1:section[j+1]-1]) < -0.1:# decrease fast
-                categorylist[section[j]:(section[j+1])]=2*np.ones((section[j+1]-section[j]))
-            elif min(A_difference[section[j]+1:section[j+1]-1]) > 0.1:# increase fast
-                categorylist[section[j]:(section[j+1])]=3*np.ones((section[j+1]-section[j]))
-            elif max(A_difference[section[j]+1:section[j+1]-1]) < 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= -0.01: # stable
-                categorylist[section[j]:(section[j+1])]=4*np.ones((section[j+1]-section[j]))
-            elif max(A_difference[section[j]+1:section[j+1]-1]) <= 0.1 and max(A_difference[section[j]+1:section[j+1]-1]) >= 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= 0: # increase slowly
-                categorylist[section[j]:(section[j+1])]=5*np.ones((section[j+1]-section[j]))
-            elif min(A_difference[section[j]+1:section[j+1]-1]) >= -0.1 and max(A_difference[section[j]+1:section[j+1]-1]) <= -0.01 and min(A_difference[section[j]+1:section[j+1]-1]) <= 0: # decrease slowly
-                categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))            
-            else: 
-                categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-        
-    complete_path_to_save_segmentlist=os.path.normpath(os.path.join(complete_dirpath_to_save_segmentlist,files_in_folder[u]))
-        
-    WriteListToCSV(complete_path_to_save_segmentlist,categorylist)
-=======
         for j in range(0, k):
             if k==1:
-                categorylist[0:section[1]]=1*np.ones((section[1]))
-                plt.axvspan(0, section[1]-1, facecolor='c', alpha=0.5)
+                categorylist[0:section[1]]=4*np.ones((section[1]))
             elif k>1 and section[j+1]-section[j]>3:
                 if max(A_difference[section[j]+1:section[j+1]-1])*min(A_difference[section[j]+1:section[j+1]-1]) < 0:#fluctuation
                     categorylist[section[j]:(section[j+1])]=1*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='g', alpha=0.8)
-                elif max(A_difference[section[j]+1:int(section[j+1])-1]) < -0.1:# decrease fast:red
+#                    plt.axvspan(section[j], section[j+1], facecolor='g', alpha=0.8)
+                elif max(A_difference[section[j]+1:section[j+1]-1]) < -0.1:# decrease fast:red
                     categorylist[section[j]:(section[j+1])]=2*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='r', alpha=1)
+#                    plt.axvspan(section[j], section[j+1], facecolor='r', alpha=1)
                 elif min(A_difference[section[j]+1:section[j+1]-1]) > 0.1:# increase fast:yellow
                     categorylist[section[j]:(section[j+1])]=3*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='y', alpha=1)
+#                    plt.axvspan(section[j], section[j+1], facecolor='y', alpha=1)
                 elif max(A_difference[section[j]+1:section[j+1]-1]) < 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= -0.01: # stable:cyan
                     categorylist[section[j]:(section[j+1])]=4*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='c', alpha=0.5)
+#                    plt.axvspan(section[j], section[j+1], facecolor='c', alpha=0.5)
                 elif max(A_difference[section[j]+1:section[j+1]-1]) <= 0.1 and max(A_difference[section[j]+1:section[j+1]-1]) >= 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= 0: # increase slowly:magenta
                     categorylist[section[j]:(section[j+1])]=5*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='m', alpha=0.5)
+#                    plt.axvspan(section[j], section[j+1], facecolor='m', alpha=0.5)
                 elif min(A_difference[section[j]+1:section[j+1]-1]) >= -0.1 and max(A_difference[section[j]+1:section[j+1]-1]) <= -0.01 and min(A_difference[section[j]+1:section[j+1]-1]) <= 0: # decrease slowly:gray
                     categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='k', alpha=0.2)                
+#                    plt.axvspan(section[j], section[j+1], facecolor='k', alpha=0.2)                
                 else: 
                     categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-                    plt.axvspan(section[j], section[j+1], facecolor='w', alpha=1)
-
-                    
-#                    for i in range(section[j], section[j+1]):
-#                        if math.fabs(A_difference[i])<=0.01:
-#                            categorydifferencelist[i]=4
-#                        elif A_difference[i]>0.1:
-#                            categorydifferencelist[i]=3
-#                        elif A_difference[i]<=0.1 and A_difference[i]>0.01:
-#                            categorydifferencelist[i]=5
-#                        elif A_difference[i]<-0.1:
-#                            categorydifferencelist[i]=2
-#                        elif A_difference[i]<=-0.01 and A_difference>=-0.1:
-#                            categorydifferencelist[i]=6
-   
-        categorylist=np.concatenate((np.zeros(zero_step),categorylist),axis=0)
+#                    plt.axvspan(section[j], section[j+1], facecolor='w', alpha=1)
+                
+        
+        intv=np.zeros((max(m),2))
+        r=0
+        rr=0
+        if k==1:
+            intv[1,0]=np.count_nonzero(categorylist==categorylist[-1])
+            intv[1,1]=categorylist[-1]
+        else:
+            for s in range(len(categorylist)-1):
+                if categorylist[s]!=categorylist[s+1]:
+                    intv[r,0]=np.count_nonzero(categorylist[rr:s]==categorylist[s])
+                    rr=s
+                    intv[r,1]=categorylist[s]
+                    r=r+1
     
-
-    
+        intv_n=len(intv)-np.count_nonzero(intv[r,0]==0)
+        intv=intv[0:intv_n,:]
+        
+        intv[:,0]=np.cumsum(intv[:,0])
+        
+        intv=np.concatenate((np.zeros((1,2)),intv),axis=0)
+        
+#        for v in range(len(intv)-1):
+#            if intv[v+1,1]==1:
+#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='g', alpha=0.8)
+#            if intv[v+1,1]==2:
+#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='r', alpha=1)
+#            if intv[v+1,1]==3:
+#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='y', alpha=1)
+#            if intv[v+1,1]==4:
+#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='c', alpha=0.5)
+#            if intv[v+1,1]==5:
+#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='m', alpha=0.5)
+#            if intv[v+1,1]==6:
+#                plt.axvspan(intv[v,0], intv[v+1,0]-1, facecolor='k', alpha=0.2)
+        
         complete_path_to_save_segmentlist=os.path.normpath(os.path.join(complete_dirpath_to_save_segmentlist,files_in_folder[u]))
-        figure_filename2=files_in_folder[u].replace('.csv','.png')
-        complete_path_to_save_figure=os.path.normpath(os.path.join(complete_dirpath_to_save_figure,figure_filename2))
+#        figure_filename=files_in_folder[u].replace('.csv','.png')
+#        complete_path_to_save_figure=os.path.normpath(os.path.join(complete_dirpath_to_save_figure,figure_filename))
         
         WriteListToCSV(complete_path_to_save_segmentlist,categorylist)
->>>>>>> parent of 923b3ca... add serial number input
 
-except ValueError:
-    print('Error') 
+#        plt.xlim(section[0], section[k]-1)
+#        plt.grid()
+#        plt.xlabel("Time(s)",fontsize=16)
+#        plt.ylabel("Setpoint",fontsize=16) 
+#        for tick in plt.gca().xaxis.get_major_ticks():
+#            tick.label1.set_fontsize(12) 
+#        for tick in plt.gca().yaxis.get_major_ticks():
+#            tick.label1.set_fontsize(12) 
+#        plt.savefig(complete_path_to_save_figure)
+#        plt.clf()
+    
+    
+    except ValueError:
+#        print('Reading CSV file:',justnumbertemp)
+#        print('run',u)
+        print('No valid StepLabel in this run!!!')
+        doesnotwork.append(u)
+#    print('Reading CSV file:',justnumbertemp) 
+    
+    print('-----------------------------------------')
 
 print('RUN TIME: %.2f secs' % (time.time()-tstart))
