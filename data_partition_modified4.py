@@ -119,91 +119,90 @@ ensure_dir(complete_dirpath_to_save_segmentlist)
 serial_number_list=[]
 for w in range(len(files_in_folder)):
     serial_number_list.append(extract_serial_number(files_in_folder[w]))
-    
-for ww in range(1):
-    u=serial_number_list.index(serial_number)    
 
-    single_file_path=os.path.join(setpoint_folder, files_in_folder[u])
-
-    mm=get_variable_from_csv(single_file_path, ['Step'])
- 
-    ultimate_length=np.shape(mm)[0]
+u=serial_number_list.index(serial_number)  
+single_file_path=os.path.join(setpoint_folder, files_in_folder[u])
     
+try:
+    xxx=get_variable_from_csv_alternative(single_file_path, 'StepLabel')
+    
+    mmm=np.zeros((np.shape(xxx)[0],1))
+        
+    for i in range(len(mmm)):
+        mmm[i]=xxx[i].split(".")[0] 
+
     AA=get_variable_from_csv(single_file_path, sensor_variables)
-    
-    try:
-        xxx=get_variable_from_csv_alternative(single_file_path, 'StepLabel')
-        mmm=np.zeros((np.shape(xxx)[0],1))
         
-        for i in range(len(mmm)):
-            mmm[i]=xxx[i].split(".")[0] 
+    modified_length=adjusted_length(single_file_path)   
+        
+    A=np.zeros((modified_length,1))
+    m=np.zeros((modified_length,1))
 
-        AA=get_variable_from_csv(single_file_path, sensor_variables)
-        
-        modified_length=adjusted_length(single_file_path)   
-        
-        A=AA[-modified_length:]
-        m=mmm[-modified_length:]
-
-        A_difference = np.zeros(((modified_length-1),1))
-        for i in range(0,(modified_length-1)):
-            A_difference[i] = A[i+1] - A[i]
-        
-        uu,uuu=np.unique(m,return_counts=True)
-        k=len(uuu)
-        
-        section=np.cumsum(uuu)
-        section=np.concatenate((np.array([0]),section),axis=0)
-        
-        categorylist=np.zeros(modified_length+1)
-        categorylist[-1]=-1
     
-        for j in range(0, k):
-            if k==1:
-                categorylist[0:section[1]]=4*np.ones((section[1]))
-            elif k>1 and section[j+1]-section[j]>3:
-                if max(A_difference[section[j]+1:section[j+1]-1])*min(A_difference[section[j]+1:section[j+1]-1]) < 0:#fluctuation
-                    categorylist[section[j]:(section[j+1])]=1*np.ones((section[j+1]-section[j]))
-                elif max(A_difference[section[j]+1:section[j+1]-1]) < -0.1:# decrease fast
-                    categorylist[section[j]:(section[j+1])]=2*np.ones((section[j+1]-section[j]))
-                elif min(A_difference[section[j]+1:section[j+1]-1]) > 0.1:# increase fast
-                    categorylist[section[j]:(section[j+1])]=3*np.ones((section[j+1]-section[j]))
-                elif max(A_difference[section[j]+1:section[j+1]-1]) < 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= -0.01: # stable
-                    categorylist[section[j]:(section[j+1])]=4*np.ones((section[j+1]-section[j]))
-                elif max(A_difference[section[j]+1:section[j+1]-1]) <= 0.1 and max(A_difference[section[j]+1:section[j+1]-1]) >= 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= 0: # increase slowly
-                    categorylist[section[j]:(section[j+1])]=5*np.ones((section[j+1]-section[j]))
-                elif min(A_difference[section[j]+1:section[j+1]-1]) >= -0.1 and max(A_difference[section[j]+1:section[j+1]-1]) <= -0.01 and min(A_difference[section[j]+1:section[j+1]-1]) <= 0: # decrease slowly
-                    categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))            
-                else: 
-                    categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
-                       
-        intv=np.zeros((max(m),2))
+    A=AA[-modified_length:]
+    m=mmm[-modified_length:]
+
+    A_difference = np.zeros(((modified_length-1),1))
+    for i in range(0,(modified_length-1)):
+        A_difference[i] = A[i+1] - A[i]
+        
+    uu,uuu=np.unique(m,return_counts=True)
+    k=len(uuu)
+        
+    section=np.cumsum(uuu)
+    section=np.concatenate((np.array([0]),section),axis=0)
+        
+    categorylist=np.zeros(modified_length+1)   
+    categorylist[-1]=-1
+    
+    for j in range(0, k):
+        if k==1:
+            categorylist[0:section[1]]=4*np.ones((section[1]))
+        elif k>1 and section[j+1]-section[j]>3:
+            if max(A_difference[section[j]+1:section[j+1]-1])*min(A_difference[section[j]+1:section[j+1]-1]) < 0:#fluctuation
+                categorylist[section[j]:(section[j+1])]=1*np.ones((section[j+1]-section[j]))
+            elif max(A_difference[section[j]+1:section[j+1]-1]) < -0.1:# decrease fast
+                categorylist[section[j]:(section[j+1])]=2*np.ones((section[j+1]-section[j]))
+            elif min(A_difference[section[j]+1:section[j+1]-1]) > 0.1:# increase fast
+                categorylist[section[j]:(section[j+1])]=3*np.ones((section[j+1]-section[j]))
+            elif max(A_difference[section[j]+1:section[j+1]-1]) < 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= -0.01: # stable
+                categorylist[section[j]:(section[j+1])]=4*np.ones((section[j+1]-section[j]))
+            elif max(A_difference[section[j]+1:section[j+1]-1]) <= 0.1 and max(A_difference[section[j]+1:section[j+1]-1]) >= 0.01 and min(A_difference[section[j]+1:section[j+1]-1]) >= 0: # increase slowly
+                categorylist[section[j]:(section[j+1])]=5*np.ones((section[j+1]-section[j]))
+            elif min(A_difference[section[j]+1:section[j+1]-1]) >= -0.1 and max(A_difference[section[j]+1:section[j+1]-1]) <= -0.01 and min(A_difference[section[j]+1:section[j+1]-1]) <= 0: # decrease slowly
+                categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))              
+            else: 
+                categorylist[section[j]:(section[j+1])]=6*np.ones((section[j+1]-section[j]))
+                
+        
+    if k==1:
+        intv=np.zeros((2,2))
+        intv[1,0]=np.count_nonzero(categorylist==categorylist[-2])
+        intv[1,1]=categorylist[-2]
+    else:
         r=0
         rr=0
-        if k==1:
-            intv[1,0]=np.count_nonzero(categorylist==categorylist[-2])
-            intv[1,1]=categorylist[-2]
-        else:
-            for s in range(len(categorylist)-1):
-                if categorylist[s]!=categorylist[s+1]:
-                    intv[r,0]=np.count_nonzero(categorylist[rr:s+1]==categorylist[s])
-                    rr=s
-                    intv[r,1]=categorylist[s]
-                    r=r+1
+        intv=np.zeros((max(m),2))
+        for s in range(len(categorylist)-1):
+            if categorylist[s]!=categorylist[s+1]:
+                intv[r,0]=np.count_nonzero(categorylist[rr:s+1]==categorylist[s])
+                rr=s
+                intv[r,1]=categorylist[s]
+                r=r+1
     
-#        intv_n=len(intv)-np.count_nonzero(intv[r,0]==0)
-        intv_n=r+1
-        intv=intv[0:intv_n,:]
+    intv_n=rr+1
+    intv=intv[0:intv_n,:]
         
-        intv[:,0]=np.cumsum(intv[:,0])
+    intv[:,0]=np.cumsum(intv[:,0])
         
-        intv=np.concatenate((np.zeros((1,2)),intv),axis=0)
+    intv=np.concatenate((np.zeros((1,2)),intv),axis=0)
         
-        complete_path_to_save_segmentlist=os.path.normpath(os.path.join(complete_dirpath_to_save_segmentlist,files_in_folder[u]))   
-        WriteListToCSV(complete_path_to_save_segmentlist,categorylist)
+    complete_path_to_save_segmentlist=os.path.normpath(os.path.join(complete_dirpath_to_save_segmentlist,files_in_folder[u]))   
+    WriteListToCSV(complete_path_to_save_segmentlist,categorylist)
 
-    except ValueError:
-        print('Error!!!')
-    print('-----------------------------------------')
+except ValueError:
+    print('Error!!!')
+
+print('-----------------------------------------')
 
 print('RUN TIME: %.2f secs' % (time.time()-tstart))
